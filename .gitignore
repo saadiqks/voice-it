@@ -1,0 +1,14 @@
+# Ignore todo.txt file
+todo.txt
+
+# Ignore test_files directory
+test_files/
+
+# Ignore __pycache__ directory
+__pycache__/
+
+# Ignore .pyc files (Python compiled files)
+*.pyc
+
+# Ignore venv directory
+venv/

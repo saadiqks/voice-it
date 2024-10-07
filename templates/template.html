@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Voice It</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <style>
+            :root {
+                --text-color-light: #333;
+                --text-color-dark: #f0f0f0;
+            }
+
+            body {
+                background-color: #f0f0f0;
+                color: var(--text-color-light);
+                font-family: Arial, serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .container {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .dark-mode {
+                background-color: #121212;
+                color: var(--text-color-dark);
+            }
+
+            .dark-mode .container {
+                background-color: #1f1f1f;
+            }
+
+            h1,
+            h3 {
+                color: var(--text-color-light);
+            }
+
+            .dark-mode h1,
+            .dark-mode h3 {
+                color: var(--text-color-dark);
+            }
+
+            .file-input {
+                margin: 25px 0;
+            }
+
+            .btn {
+                background-color: #5783db;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .dark-mode .btn {
+                background-color: #3f51b5;
+            }
+
+            .redbtn {
+                background-color: #f44336;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .darkmode .redbtn {
+                background-color: #c2160a;
+            }
+
+            .loader {
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #3498db;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 1s linear infinite;
+                display: inline-block;
+                vertical-align: middle;
+                margin-left: 10px;
+            }
+
+            .dark-mode-toggle {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-size: 24px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app" class="container">
+            <!-- Dark Mode Toggle -->
+            {% raw %}
+            <button @click="toggleDarkMode" class="dark-mode-toggle">
+                {{ isDarkMode ? '☀️' : '🌙' }}
+            </button>
+            {% endraw %}
+
+            <h1>Voice It</h1>
+            <h3>
+                Voice It allows you to convert a text file into an audio file.
+            </h3>
+            <p>Input must be a TXT, PDF, EPUB, or DOCX file.</p>
+            <p>File size must be less than 1 MB.</p>
+            <p>
+                Uploaded files and recordings will be deleted after 1 hour to
+                protect your privacy.
+            </p>
+
+            <div class="file-input">
+                <input
+                    type="file"
+                    ref="file"
+                    @change="handleFileUpload"
+                    accept=".txt,.pdf,.epub,.docx"
+                    required
+                />
+            </div>
+            <button
+                class="btn"
+                @click="submitFile"
+                :disabled="!file || isConverting"
+            >
+                Convert to speech
+            </button>
+            <button v-if="isConverting" class="redbtn" @click="cancelUpload">
+                Cancel upload
+            </button>
+
+            <span v-if="isConverting" class="loader"></span>
+            <div v-if="audioFile">
+                <p>Conversion complete!</p>
+                <a :href="'/downloads/' + audioFile">Download audio file</a>
+            </div>
+        </div>
+
+        <script>
+            new Vue({
+                el: "#app",
+                data: {
+                    file: null,
+                    error: null,
+                    audioFile: null,
+                    isConverting: false,
+                    cancelTokenSource: null,
+                    isDarkMode: false,
+                },
+                // mounted() {
+                //     if (localStorage.getItem("isDarkMode") === "true") {
+                //         this.isDarkMode = true;
+                //         document.body.classList.add("dark-mode");
+                //     }
+                // },
+                methods: {
+                    handleFileUpload(event) {
+                        this.file = event.target.files[0];
+                        this.audioFile = null;
+                        this.error = null;
+                    },
+                    submitFile() {
+                        if (this.file.size > 1024 * 1024) {
+                            alert("File size exceeds 1 MB limit.");
+                            return;
+                        }
+
+                        const allowedExtensions = [
+                            ".pdf",
+                            ".txt",
+                            ".docx",
+                            ".epub",
+                        ];
+                        const fileName = this.file.name.toLowerCase();
+
+                        if (
+                            !allowedExtensions.some((ext) =>
+                                fileName.endsWith(ext),
+                            )
+                        ) {
+                            alert(
+                                "Invalid file type! Please upload a PDF, TXT, DOCX, or EPUB file.",
+                            );
+                            return;
+                        }
+
+                        this.isConverting = true;
+                        this.error = null;
+                        this.audioFile = null;
+
+                        // Create cancel token
+                        this.cancelTokenSource = axios.CancelToken.source();
+
+                        let formData = new FormData();
+                        formData.append("file", this.file);
+
+                        axios
+                            .post("/", formData, {
+                                headers: {
+                                    "Content-Type": "multipart/form-data",
+                                },
+                                cancelToken: this.cancelTokenSource.token, // Pass the cancel token
+                            })
+                            .then((response) => {
+                                this.audioFile = response.data.audio_file;
+                                this.error = null;
+                            })
+                            .catch((error) => {
+                                if (axios.isCancel(error)) {
+                                    return;
+                                } else if (
+                                    error.response &&
+                                    error.response.data &&
+                                    error.response.data.error
+                                ) {
+                                    this.error = error.response.data.error;
+                                } else {
+                                    this.error =
+                                        "An unexpected error occurred during file conversion.";
+                                }
+                                alert(this.error);
+                            })
+                            .finally(() => {
+                                this.isConverting = false;
+                            });
+                    },
+                    cancelUpload() {
+                        if (this.cancelTokenSource) {
+                            this.cancelTokenSource.cancel(
+                                "Upload canceled by the user.",
+                            );
+                        }
+                    },
+                    toggleDarkMode(event) {
+                        this.isDarkMode = !this.isDarkMode;
+                        if (this.isDarkMode) {
+                            document.body.classList.add("dark-mode");
+                        } else {
+                            document.body.classList.remove("dark-mode");
+                        }
+                        // Save preference to localStorage
+                        // localStorage.setItem("isDarkMode", this.isDarkMode);
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
