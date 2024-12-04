@@ -4,6 +4,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Voice It</title>
+        <link
+            rel="icon"
+            href="{{ url_for('static', filename='favicon.ico') }}"
+            type="image/x-icon"
+        />
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <style>
@@ -107,6 +112,11 @@
                     transform: rotate(360deg);
                 }
             }
+
+            audio {
+                display: block;
+                margin: 10px 0;
+            }
         </style>
     </head>
     <body>
@@ -119,22 +129,17 @@
             {% endraw %}
 
             <h1>Voice It</h1>
-            <h3>
-                Voice It allows you to convert a text file into an audio file.
-            </h3>
-            <p>Input must be a TXT, PDF, EPUB, or DOCX file.</p>
+            <h3>Convert any text file into an audio file!</h3>
+            <p>Input must be a TXT, PDF, or DOCX file.</p>
             <p>File size must be less than 1 MB.</p>
-            <p>
-                Uploaded files and recordings will be deleted after 1 hour to
-                protect your privacy.
-            </p>
+            <p>Uploaded files and recordings are not stored.</p>
 
             <div class="file-input">
                 <input
                     type="file"
                     ref="file"
                     @change="handleFileUpload"
-                    accept=".txt,.pdf,.epub,.docx"
+                    accept=".txt,.pdf,.docx"
                     required
                 />
             </div>
@@ -152,7 +157,10 @@
             <span v-if="isConverting" class="loader"></span>
             <div v-if="audioFile">
                 <p>Conversion complete!</p>
-                <a :href="'/downloads/' + audioFile">Download audio file</a>
+                <audio controls>
+                    <source :src="'/audio/' + audioFile" type="audio/wav" />
+                    Your browser does not support the audio element.
+                </audio>
             </div>
         </div>
 
@@ -185,12 +193,7 @@
                             return;
                         }
 
-                        const allowedExtensions = [
-                            ".pdf",
-                            ".txt",
-                            ".docx",
-                            ".epub",
-                        ];
+                        const allowedExtensions = [".pdf", ".txt", ".docx"];
                         const fileName = this.file.name.toLowerCase();
 
                         if (
@@ -199,7 +202,7 @@
                             )
                         ) {
                             alert(
-                                "Invalid file type! Please upload a PDF, TXT, DOCX, or EPUB file.",
+                                "Invalid file type! Please upload a PDF, TXT, or DOCX file.",
                             );
                             return;
                         }
