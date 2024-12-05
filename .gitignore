@@ -13,3 +13,6 @@ __pycache__/
 # Ignore env directory
 env/
 .vercel/
+
+# Ignore .ropeproject
+.ropeproject
