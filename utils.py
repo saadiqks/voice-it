@@ -7,10 +7,11 @@ from typing import List
 
 NUM_CHANNELS = 1  # Assuming mono audio
 SAMPLE_WIDTH = 2  # 2 bytes per sample (16-bit PCM)
-SAMPLE_RATE = 8000  # The sample rate in Hz
+SAMPLE_RATE = 16000  # The sample rate in Hz
+MAX_LENGTH = 400
 
 
-def chunk_text_by_sentences(text: str, max_length: int = 400) -> List[str]:
+def chunk_text_by_sentences(text: str) -> List[str]:
    """
    Chunk text into segments, allowing sentence cutting if too long
    """
@@ -21,16 +22,16 @@ def chunk_text_by_sentences(text: str, max_length: int = 400) -> List[str]:
    current_chunk = ""
 
    for sentence in sentences:
-       # If sentence is longer than max_length, cut it
-       if len(sentence) > max_length:
-           # Cut sentence into max_length pieces
+       # If sentence is longer than MAX_LENGTH, cut it
+       if len(sentence) > MAX_LENGTH:
+           # Cut sentence into MAX_LENGTH pieces
            while sentence:
-               chunk = sentence[:max_length]
+               chunk = sentence[:MAX_LENGTH]
                chunks.append(chunk.strip())
-               sentence = sentence[max_length:]
+               sentence = sentence[MAX_LENGTH:]
        else:
-           # If adding this sentence would exceed max_length, start a new chunk
-           if len(current_chunk) + len(sentence) > max_length:
+           # If adding this sentence would exceed MAX_LENGTH, start a new chunk
+           if len(current_chunk) + len(sentence) > MAX_LENGTH:
                chunks.append(current_chunk.strip())
                current_chunk = sentence
            else:

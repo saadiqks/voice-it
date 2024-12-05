@@ -9,6 +9,7 @@
             href="{{ url_for('static', filename='favicon.ico') }}"
             type="image/x-icon"
         />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <style>
@@ -131,7 +132,7 @@
             <h1>Voice It</h1>
             <h3>Convert any text file into an audio file!</h3>
             <p>Input must be a TXT, PDF, or DOCX file.</p>
-            <p>File size must be less than 1 MB.</p>
+            <p>File must have fewer than 1500 characters.</p>
             <p>Uploaded files and recordings are not stored.</p>
 
             <div class="file-input">
@@ -158,7 +159,7 @@
             <div v-if="audioFile">
                 <p>Conversion complete!</p>
                 <audio controls>
-                    <source :src="'/audio/' + audioFile" type="audio/wav" />
+                    <source :src="audioFile" type="audio/wav" />
                     Your browser does not support the audio element.
                 </audio>
             </div>
@@ -187,12 +188,7 @@
                         this.audioFile = null;
                         this.error = null;
                     },
-                    submitFile() {
-                        if (this.file.size > 1024 * 1024) {
-                            alert("File size exceeds 1 MB limit.");
-                            return;
-                        }
-
+                    async submitFile() {
                         const allowedExtensions = [".pdf", ".txt", ".docx"];
                         const fileName = this.file.name.toLowerCase();
 
@@ -217,16 +213,12 @@
                         let formData = new FormData();
                         formData.append("file", this.file);
 
-                        axios
+                        const response = await axios
                             .post("/", formData, {
                                 headers: {
                                     "Content-Type": "multipart/form-data",
                                 },
                                 cancelToken: this.cancelTokenSource.token, // Pass the cancel token
-                            })
-                            .then((response) => {
-                                this.audioFile = response.data.audio_file;
-                                this.error = null;
                             })
                             .catch((error) => {
                                 if (axios.isCancel(error)) {
@@ -246,6 +238,28 @@
                             .finally(() => {
                                 this.isConverting = false;
                             });
+
+                        const audioResponse = await axios.get(
+                            `/audio/${response.data.audio_file}`,
+                            {
+                                responseType: "blob",
+                            },
+                        );
+
+                        const zip = new JSZip();
+                        const unzippedContents = await zip.loadAsync(
+                            audioResponse.data,
+                        );
+                        const zipFiles = Object.keys(unzippedContents.files);
+                        if (zipFiles.length === 0) {
+                            throw new Error("No files in zip");
+                        }
+
+                        const audioFile = await unzippedContents
+                            .file(zipFiles[0])
+                            .async("blob");
+
+                        this.audioFile = URL.createObjectURL(audioFile);
                     },
                     cancelUpload() {
                         if (this.cancelTokenSource) {
