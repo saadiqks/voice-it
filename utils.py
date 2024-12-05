@@ -1,13 +1,13 @@
-import requests
 import os
-import wave
 import re
+import requests
+import wave
 
 from typing import List
 
 NUM_CHANNELS = 1  # Assuming mono audio
 SAMPLE_WIDTH = 2  # 2 bytes per sample (16-bit PCM)
-SAMPLE_RATE = 16000  # The sample rate in Hz
+SAMPLE_RATE = 24000  # The sample rate in Hz
 MAX_LENGTH = 400
 
 
@@ -22,22 +22,18 @@ def chunk_text_by_sentences(text: str) -> List[str]:
    current_chunk = ""
 
    for sentence in sentences:
-       # If sentence is longer than MAX_LENGTH, cut it
        if len(sentence) > MAX_LENGTH:
-           # Cut sentence into MAX_LENGTH pieces
            while sentence:
                chunk = sentence[:MAX_LENGTH]
                chunks.append(chunk.strip())
                sentence = sentence[MAX_LENGTH:]
        else:
-           # If adding this sentence would exceed MAX_LENGTH, start a new chunk
            if len(current_chunk) + len(sentence) > MAX_LENGTH:
                chunks.append(current_chunk.strip())
                current_chunk = sentence
            else:
                current_chunk += " " + sentence if current_chunk else sentence
 
-   # Add the last chunk if not empty
    if current_chunk:
        chunks.append(current_chunk.strip())
 
@@ -45,9 +41,6 @@ def chunk_text_by_sentences(text: str) -> List[str]:
 
 
 def generate_speech_chunks(text: str) -> bytes:
-    """
-    Generate speech for text chunks.
-    """
     api_key = os.getenv("LIGHTNING_API_TOKEN")
 
     text_chunks = chunk_text_by_sentences(text)
@@ -82,13 +75,8 @@ def generate_speech_chunks(text: str) -> bytes:
 
 
 def combine_wav_chunks(audio_data: bytes, output_path: str):
-    """
-    Combine multiple WAV file bytes into a single WAV file.
-    """
-    wav_path = output_path[:-3] + "wav"
-
     # Write the PCM data into a WAV file
-    with wave.open(wav_path, 'wb') as wav_file:
+    with wave.open(output_path, 'wb') as wav_file:
         wav_file.setnchannels(NUM_CHANNELS)  # Mono channel
         wav_file.setsampwidth(SAMPLE_WIDTH)  # 16-bit audio (2 bytes)
         wav_file.setframerate(SAMPLE_RATE)  # SAMPLE RATE

@@ -15,4 +15,4 @@ env/
 .vercel/
 
 # Ignore .ropeproject
-.ropeproject
+.ropeproject/

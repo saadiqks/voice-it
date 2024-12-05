@@ -1,6 +1,5 @@
 import os
 import time
-import zipfile
 
 from flask import Flask, request, render_template, jsonify, send_file
 from magic import Magic
@@ -42,20 +41,14 @@ def upload_file() -> tuple[Response, int] | Response | str:
             audio_path = os.path.join("/tmp", audio_filename)
             convert_file_to_wav(file_path, audio_path)
 
-            # Zip the audio file
-            zip_filename = audio_filename.replace(".wav", ".zip")
-            zip_path = os.path.join("/tmp", zip_filename)
-            with zipfile.ZipFile(zip_path, "w") as zipf:
-                zipf.write(audio_path, arcname=audio_filename)
-
-            return jsonify({"audio_file": zip_filename})
+            return jsonify({"audio_file": audio_filename})
 
     return render_template("template.html")
 
 
-@app.route("/audio/<filename>", methods=["GET"])
+@app.route("/audio/<filename>")
 def serve_audio(filename):
-    return send_file(f"/tmp/{filename}", mimetype="application/zip")
+    return send_file(f"/tmp/{filename}", mimetype="audio/wav")
 
 
 if __name__ == "__main__":
