@@ -6,8 +6,10 @@ from magic import Magic
 from voice_it import convert_file_to_wav
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers.response import Response
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def validate_mime_type(file_path: str) -> bool:
     mime = Magic(mime=True)

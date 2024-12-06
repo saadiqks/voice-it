@@ -4,12 +4,14 @@ import requests
 import wave
 
 from typing import List
+from dotenv import load_dotenv
 
 NUM_CHANNELS = 1  # Assuming mono audio
 SAMPLE_WIDTH = 2  # 2 bytes per sample (16-bit PCM)
 SAMPLE_RATE = 24000  # The sample rate in Hz
 MAX_LENGTH = 400
 
+load_dotenv()
 
 def chunk_text_by_sentences(text: str) -> List[str]:
    """
@@ -41,7 +43,7 @@ def chunk_text_by_sentences(text: str) -> List[str]:
 
 
 def generate_speech_chunks(text: str) -> bytes:
-    api_key = os.getenv("LIGHTNING_API_TOKEN")
+    api_key = os.environ.get("API_TOKEN")
 
     text_chunks = chunk_text_by_sentences(text)
     combined_audio = b''
