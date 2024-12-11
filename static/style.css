@@ -15,8 +15,12 @@ body {
 .container {
     background-color: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#bottom {
+    margin-top: 20px;
 }
 
 .dark-mode {
@@ -51,8 +55,16 @@ h3 {
     cursor: pointer;
 }
 
+.btn:hover {
+    background-color: #2d64d2;
+}
+
 .dark-mode .btn {
     background-color: #3f51b5;
+}
+
+.dark-mode .btn:hover {
+    background-color: #5566c3;
 }
 
 .redbtn {
@@ -64,8 +76,16 @@ h3 {
     cursor: pointer;
 }
 
+.redbtn:hover {
+    background-color: #f21c0d;
+}
+
 .darkmode .redbtn {
     background-color: #c2160a;
+}
+
+.darkmode .redbtn:hover {
+    background-color: #f21c0d;
 }
 
 .loader {

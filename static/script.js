@@ -7,6 +7,12 @@ new Vue({
         isConverting: false,
         cancelTokenSource: null,
         isDarkMode: false,
+        count: null,
+    },
+    created() {
+        axios.get("/count/").then((response) => {
+            this.count = response.data;
+        });
     },
     // mounted() {
     //     if (localStorage.getItem("isDarkMode") === "true") {
