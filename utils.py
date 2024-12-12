@@ -76,7 +76,7 @@ def generate_speech_chunks(text: str) -> bytes:
     return combined_audio
 
 
-def combine_wav_chunks(audio_data: bytes, output_path: str):
+def combine_wav_chunks(audio_data: bytes, output_path: str) -> None:
     # Write the PCM data into a WAV file
     with wave.open(output_path, 'wb') as wav_file:
         wav_file.setnchannels(NUM_CHANNELS)  # Mono channel

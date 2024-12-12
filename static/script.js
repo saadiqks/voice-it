@@ -8,11 +8,7 @@ new Vue({
         cancelTokenSource: null,
         isDarkMode: false,
         count: null,
-    },
-    created() {
-        axios.get("/count/").then((response) => {
-            this.count = response.data;
-        });
+        timer: null,
     },
     // mounted() {
     //     if (localStorage.getItem("isDarkMode") === "true") {
@@ -26,7 +22,35 @@ new Vue({
             this.audioFile = null;
             this.error = null;
         },
+        formatTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            let timeString = [];
+
+            if (hours > 0) {
+                timeString.push(`${hours} hour${hours !== 1 ? "s" : ""}`);
+            }
+            if (minutes > 0) {
+                timeString.push(`${minutes} minute${minutes !== 1 ? "s" : ""}`);
+            }
+            if (seconds > 0 || timeString.length === 0) {
+                timeString.push(`${seconds} second${seconds !== 1 ? "s" : ""}`);
+            }
+
+            return timeString.join(", ");
+        },
+        resetCountdown() {
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
+
+            this.count = null;
+        },
         submitFile() {
+            this.resetCountdown();
+
             const allowedExtensions = [".pdf", ".txt", ".docx"];
             const fileName = this.file.name.toLowerCase();
 
@@ -48,14 +72,31 @@ new Vue({
             formData.append("file", this.file);
 
             axios
-                .post("/", formData, {
+                .post("/count/", formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
-                    cancelToken: this.cancelTokenSource.token, // Pass the cancel token
                 })
-                .then((response) => {
-                    this.audioFile = response.data.audio_file;
+                .then((countResponse) => {
+                    this.count = parseInt(countResponse.data);
+
+                    this.timer = setInterval(() => {
+                        this.count--;
+                        if (this.count <= 0) {
+                            clearInterval(this.timer);
+                        }
+                    }, 1000);
+
+                    // Return a new promise for the file conversion
+                    return axios.post("/", formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                        cancelToken: this.cancelTokenSource.token,
+                    });
+                })
+                .then((conversionResponse) => {
+                    this.audioFile = conversionResponse.data.audio_file;
                     this.error = null;
                 })
                 .catch((error) => {

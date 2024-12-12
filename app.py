@@ -3,13 +3,14 @@ import time
 
 from flask import Flask, request, render_template, jsonify, send_file
 from magic import Magic
-from voice_it import convert_file_to_wav
+from voice_it import get_text, convert_file_to_wav
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers.response import Response
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+
 
 def validate_mime_type(file_path: str) -> bool:
     mime = Magic(mime=True)
@@ -22,6 +23,26 @@ def validate_mime_type(file_path: str) -> bool:
     return file_mime_type in allowed_mime_types
 
 
+def save_uploaded_file(file):
+    """
+    Saves the uploaded file and returns the file path.
+    Performs basic validations.
+    """
+    if not file or file.filename is None or file.filename == "":
+        return None
+
+    filename = secure_filename(file.filename)
+    file_path = os.path.join("/tmp", filename)
+    file.save(file_path)
+
+    # Validate MIME type
+    if not validate_mime_type(file_path):
+        os.remove(file_path)
+        return None
+
+    return file_path
+
+
 @app.route("/", methods=["GET", "POST"])
 def upload_file() -> tuple[Response, int] | Response | str:
     if request.method == "POST":
@@ -29,54 +50,42 @@ def upload_file() -> tuple[Response, int] | Response | str:
             return jsonify({"error": "No file part"}), 400
 
         file = request.files["file"]
+        file_path = save_uploaded_file(file)
 
-        if file.filename == "" or file.filename is None:
-            return jsonify({"error": "No selected file"}), 400
+        if file_path is None:
+            return jsonify({"error": "Invalid file or MIME type"}), 400
 
-        if file:
-            filename = secure_filename(file.filename)
-            file_path = os.path.join("/tmp", filename)
-            file.save(file_path)
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        audio_filename = os.path.splitext(os.path.basename(file_path))[0] + f"_{timestamp}.wav"
+        audio_path = os.path.join("/tmp", audio_filename)
+        char_count = convert_file_to_wav(file_path, audio_path)
 
-            if not validate_mime_type(file_path):
-                os.remove(file_path)
-                return jsonify({"error": "Invalid MIME type for the uploaded file."}), 400
+        if char_count is not None:
+            return jsonify({"error": f"File has too many characters: {char_count}"}), 400
 
-            timestamp = time.strftime("%Y%m%d-%H%M%S")
-            audio_filename = os.path.splitext(filename)[0] + f"_{timestamp}.wav"
-            audio_path = os.path.join("/tmp", audio_filename)
-            char_count = convert_file_to_wav(file_path, audio_path)
-
-            if char_count != None:
-                return jsonify({"error": f"File has too many characters: {char_count}"}), 400
-
-            return jsonify({"audio_file": audio_filename})
+        return jsonify({"audio_file": audio_filename})
 
     return render_template("template.html")
 
 
-@app.route("/audio/<filename>")
-def serve_audio(filename):
+@app.route("/audio/<filename>", methods=["GET"])
+def serve_audio(filename: str) -> Response:
     return send_file(f"/tmp/{filename}", mimetype="audio/wav")
 
 
-@app.route("/count/")
-def count():
-    char_count = 10
-    seconds = char_count
-    minutes = seconds // 60
-    hours = minutes // 60
-    estimated_time = None
+@app.route("/count/", methods=["POST"])
+def count() -> Response:
+    if "file" not in request.files:
+        return Response(str(0))
 
-    if seconds < 60:
-        estimated_time = f"{seconds} second{'s' if seconds != 1 else ''}"
-    elif minutes < 60:
-        estimated_time = f"{minutes} minute{'s' if minutes != 1 else ''}"
-    else:
-        estimated_time = f"{hours} hour{'s' if hours != 1 else ''}"
+    file = request.files["file"]
+    file_path = save_uploaded_file(file)
 
-    return Response(estimated_time)
+    if file_path is None:
+        return Response(str(0))
 
+    text = get_text(file_path)
+    return Response(str(len(text) // 100))
 
 if __name__ == "__main__":
     app.run()

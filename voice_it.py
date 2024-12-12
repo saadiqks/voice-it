@@ -31,7 +31,7 @@ def call_lightning_api(text: str, audio_path: str) -> None:
     combine_wav_chunks(audio_data, audio_path)
 
 
-def convert_file_to_wav(file_path: str, audio_path: str) -> None | int:
+def get_text(file_path: str) -> str:
     text = ""
     file_type = file_path.split(".")[-1]
 
@@ -43,7 +43,13 @@ def convert_file_to_wav(file_path: str, audio_path: str) -> None | int:
         case "docx":
             text = docx_to_string(file_path)
 
-    if len(text) <= CHAR_LIMIT:
+    return text
+
+
+def convert_file_to_wav(file_path: str, audio_path: str) -> None | int:
+    text = get_text(file_path)
+    text_len = len(text)
+    if text_len <= CHAR_LIMIT:
         call_lightning_api(text, audio_path)
     else:
-        return len(text)
+        return text_len

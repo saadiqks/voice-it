@@ -7,7 +7,7 @@ body {
     background-color: #f0f0f0;
     color: var(--text-color-light);
     font-family: Arial, serif;
-    max-width: 800px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px;
 }
