@@ -2,45 +2,14 @@ import os
 import time
 
 from flask import Flask, request, render_template, jsonify, send_file
-from magic import Magic
-from voice_it import get_text, convert_file_to_wav
-from werkzeug.utils import secure_filename
+from text_service import get_text
+from conversion_service import save_uploaded_file, convert_file_to_wav
+from config import FileConfig
 from werkzeug.wrappers.response import Response
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
-
-def validate_mime_type(file_path: str) -> bool:
-    mime = Magic(mime=True)
-    file_mime_type = mime.from_file(file_path)
-    allowed_mime_types = [
-        "text/plain",
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ]
-    return file_mime_type in allowed_mime_types
-
-
-def save_uploaded_file(file):
-    """
-    Saves the uploaded file and returns the file path.
-    Performs basic validations.
-    """
-    if not file or file.filename is None or file.filename == "":
-        return None
-
-    filename = secure_filename(file.filename)
-    file_path = os.path.join("/tmp", filename)
-    file.save(file_path)
-
-    # Validate MIME type
-    if not validate_mime_type(file_path):
-        os.remove(file_path)
-        return None
-
-    return file_path
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -57,7 +26,7 @@ def upload_file() -> tuple[Response, int] | Response | str:
 
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         audio_filename = os.path.splitext(os.path.basename(file_path))[0] + f"_{timestamp}.wav"
-        audio_path = os.path.join("/tmp", audio_filename)
+        audio_path = os.path.join(FileConfig.UPLOAD_FOLDER, audio_filename)
         char_count = convert_file_to_wav(file_path, audio_path)
 
         if char_count is not None:
@@ -70,7 +39,7 @@ def upload_file() -> tuple[Response, int] | Response | str:
 
 @app.route("/audio/<filename>", methods=["GET"])
 def serve_audio(filename: str) -> Response:
-    return send_file(f"/tmp/{filename}", mimetype="audio/wav")
+    return send_file(f"{FileConfig.UPLOAD_FOLDER}/{filename}", mimetype="audio/wav")
 
 
 @app.route("/count/", methods=["POST"])
