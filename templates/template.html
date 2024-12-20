@@ -24,7 +24,7 @@
             <h1>Voice It</h1>
             <h3>Convert any text file into an audio file!</h3>
             <p>Input must be a TXT, PDF, or DOCX file.</p>
-            <p>File must have fewer than 3000 characters.</p>
+            <p>File must have fewer than 5000 characters.</p>
             <p>Uploaded files and recordings are not stored.</p>
 
             <div class="file-input">
@@ -49,13 +49,13 @@
 
             <span v-if="isConverting" class="loader"></span>
             <span v-if="isConverting"
-                >Estimated time remaining
+                >Estimated time remaining:
                 <span v-text="formatTime(count)"></span
             ></span>
             <div v-if="audioFile">
                 <p>Conversion complete!</p>
                 <audio controls>
-                    <source :src="'/audio/' + audioFile" type="audio/wav" />
+                    <source :src="'/audio/' + audioFile" type="audio/mp3" />
                     Your browser does not support the audio element.
                 </audio>
             </div>

@@ -1,15 +1,11 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class SpeechConfig:
-    API_TOKEN = os.getenv("API_TOKEN")
-    API_ENDPOINT = "https://waves-api.smallest.ai/api/v1/lightning/get_speech"
-
-    NUM_CHANNELS = 1  # Mono audio
-    SAMPLE_WIDTH = 2  # 2 bytes per sample (16-bit PCM)
-    SAMPLE_RATE = 24000  # Sample rate in Hz
+    NAME = "en-US-Wavenet-J"
 
 class FileConfig:
     ALLOWED_MIME_TYPES = [
@@ -21,7 +17,7 @@ class FileConfig:
     UPLOAD_FOLDER = "/tmp"
 
 class TextConfig:
-    MAX_TEXT_LENGTH = 3000
+    MAX_TEXT_LENGTH = 5000 # Google TTS has a limit of 5000 chars
     MAX_CHUNK_LENGTH = 400
 
 class LoggingConfig:

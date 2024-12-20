@@ -1,11 +1,12 @@
-from speech_service import generate_speech_chunks, combine_wav_chunks
-from text_service import get_text
-from config import TextConfig
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import FileStorage
-from magic import Magic
 import os
-from config import FileConfig
+
+from magic import Magic
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
+
+from config import FileConfig, TextConfig
+from speech_service import combine_wav_chunks, generate_speech
+from text_service import get_text
 
 
 def validate_mime_type(file_path: str) -> bool:
@@ -34,7 +35,7 @@ def convert_file_to_wav(file_path: str, audio_path: str) -> None | int:
     text = get_text(file_path)
     text_len = len(text)
     if text_len <= TextConfig.MAX_TEXT_LENGTH:
-        audio_data = generate_speech_chunks(text)
+        audio_data = generate_speech(text)
         combine_wav_chunks(audio_data, audio_path)
     else:
         return text_len

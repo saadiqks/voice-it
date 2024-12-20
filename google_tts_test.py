@@ -1,4 +1,4 @@
-"""Synthesizes speech from the input string of text or ssml.
+"""Synthesizes speech from the input string of text or ssml using Neural2 voice.
 Make sure to be working in a virtual environment.
 
 Note: ssml must be well-formed according to:
@@ -10,17 +10,17 @@ from google.cloud import texttospeech
 client = texttospeech.TextToSpeechClient()
 
 # Set the text input to be synthesized
-synthesis_input = texttospeech.SynthesisInput(text="Hello, World!")
+synthesis_input = texttospeech.SynthesisInput(text="The quick brown fox jumped over the lazy dog.")
 
-# Build the voice request, select the language code ("en-US") and the ssml
-# voice gender ("neutral")
+# Build the voice request, select the language code ("en-US") and the Neural2 voice
 voice = texttospeech.VoiceSelectionParams(
-    language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+    language_code="en-US",
+    name="en-US-Wavenet-J",  # Neural2 voice
 )
 
 # Select the type of audio file you want returned
 audio_config = texttospeech.AudioConfig(
-    audio_encoding=texttospeech.AudioEncoding.MP3
+    audio_encoding=texttospeech.AudioEncoding.LINEAR16
 )
 
 # Perform the text-to-speech request on the text input with the selected
@@ -30,7 +30,7 @@ response = client.synthesize_speech(
 )
 
 # The response's audio_content is binary.
-with open("output.mp3", "wb") as out:
+with open("output.wav", "wb") as out:
     # Write the response to the output file.
     out.write(response.audio_content)
-    print('Audio content written to file "output.mp3"')
+    print('Audio content written to file "output.wav"')

@@ -1,7 +1,9 @@
 import re
 from typing import List
-from file_parsers import pdf_to_string, txt_to_string, docx_to_string
+
 from config import TextConfig
+from file_parsers import docx_to_string, pdf_to_string, txt_to_string
+
 
 def get_text(file_path: str) -> str:
     text = ""
