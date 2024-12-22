@@ -81,8 +81,9 @@ new Vue({
                     this.count = parseInt(countResponse.data);
 
                     this.timer = setInterval(() => {
-                        this.count--;
-                        if (this.count <= 0) {
+                        if (this.count > 0) {
+                            this.count--;
+                        } else {
                             clearInterval(this.timer);
                         }
                     }, 1000);

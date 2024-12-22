@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Voice It</title>
+        <title>Vocality</title>
         <link
             rel="icon"
             href="{{ url_for('static', filename='favicon.ico') }}"
@@ -21,10 +21,10 @@
             </button>
             {% endraw %}
 
-            <h1>Voice It</h1>
+            <h1>Vocality</h1>
             <h3>Convert any text file into an audio file!</h3>
             <p>Input must be a TXT, PDF, or DOCX file.</p>
-            <p>File must have fewer than 5000 characters.</p>
+            <p>File must have fewer than 2000 characters.</p>
             <p>Uploaded files and recordings are not stored.</p>
 
             <div class="file-input">
@@ -60,12 +60,17 @@
                 </audio>
             </div>
         </div>
-        <!-- <div id="bottom" class="container">
-            Consider donating if you find this website useful
+        <div id="bottom" class="container">
+            Consider donating if you find this website useful.
             <br />
             <br />
-            <button class="btn">Donate</button>
-        </div> -->
+            <button
+                class="btn"
+                onclick="window.location.href='https://buymeacoffee.com/sshaik';"
+            >
+                Donate
+            </button>
+        </div>
         <script src="../static/script.js"></script>
     </body>
 </html>

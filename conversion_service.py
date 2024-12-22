@@ -34,7 +34,7 @@ def save_uploaded_file(file: FileStorage) -> None | str:
 def convert_file_to_wav(file_path: str, audio_path: str) -> None | int:
     text = get_text(file_path)
     text_len = len(text)
-    if text_len <= TextConfig.MAX_TEXT_LENGTH:
+    if text_len < TextConfig.MAX_TEXT_LENGTH:
         audio_data = generate_speech(text)
         combine_wav_chunks(audio_data, audio_path)
     else:
