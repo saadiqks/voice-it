@@ -10,19 +10,14 @@
             type="image/x-icon"
         />
         <link rel="stylesheet" href="../static/style.css" />
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     </head>
     <body>
         <div id="app" class="container">
-            {% raw %}
-            <button @click="toggleDarkMode" class="dark-mode-toggle">
-                {{ isDarkMode ? '🌙' : '☀️' }}
-            </button>
-            {% endraw %}
+            <button id="darkModeToggle" class="dark-mode-toggle">☀️</button>
 
             <h1>Vocality</h1>
-            <h3>Convert any text file into an audio file!</h3>
+            <h3>Convert any text file into an audio file for free!</h3>
             <p>Input must be a TXT, PDF, or DOCX file.</p>
             <p>File must have fewer than 2000 characters.</p>
             <p>Uploaded files and recordings are not stored.</p>
@@ -30,47 +25,38 @@
             <div class="file-input">
                 <input
                     type="file"
-                    ref="file"
-                    @change="handleFileUpload"
+                    id="fileInput"
                     accept=".txt,.pdf,.docx"
                     required
                 />
             </div>
-            <button
-                class="btn"
-                @click="submitFile"
-                :disabled="!file || isConverting"
-            >
-                Convert to speech
-            </button>
-            <button v-if="isConverting" class="redbtn" @click="cancelUpload">
+            <button class="btn" id="convertBtn">Convert to speech</button>
+            <button id="cancelBtn" class="redbtn" style="display: none">
                 Cancel upload
             </button>
 
-            <span v-if="isConverting" class="loader"></span>
-            <span v-if="isConverting"
-                >Estimated time remaining:
-                <span v-text="formatTime(count)"></span
-            ></span>
-            <div v-if="audioFile">
+            <!-- <span id="loader" class="loader" style="display: none"></span> -->
+            <span id="timeRemaining" style="display: none">
+                Estimated time remaining: <span id="countdown"></span>
+            </span>
+            <div id="audioContainer" style="display: none">
                 <p>Conversion complete!</p>
-                <audio controls>
-                    <source :src="'/audio/' + audioFile" type="audio/mp3" />
+                <audio id="audioPlayer" controls>
                     Your browser does not support the audio element.
                 </audio>
+                <a id="downloadLink">Download audio file</a>
             </div>
         </div>
         <div id="bottom" class="container">
             Consider donating if you find this website useful.
-            <br />
-            <br />
+            <br /><br />
             <button
                 class="btn"
                 onclick="window.location.href='https://buymeacoffee.com/sshaik';"
             >
-                Donate
+                Buy Me a Coffee
             </button>
+            <script src="../static/script.js"></script>
         </div>
-        <script src="../static/script.js"></script>
     </body>
 </html>

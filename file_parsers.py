@@ -1,5 +1,6 @@
 from docx import Document
 from PyPDF2 import PdfReader
+from io import StringIO
 
 
 def txt_to_string(file_path: str) -> str:
@@ -19,8 +20,9 @@ def docx_to_string(file_path: str) -> str:
 def pdf_to_string(file_path: str) -> str:
     with open(file_path, "rb") as file:
         reader = PdfReader(file)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() + "\n"
+        ss = StringIO()
 
-    return text
+        for page in reader.pages:
+            ss.write(f"{page.extract_text()}\n")
+
+    return ss.getvalue()

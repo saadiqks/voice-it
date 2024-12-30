@@ -21,7 +21,7 @@ def get_text(file_path: str) -> str:
 
 
 def chunk_text_by_sentences(text: str) -> List[str]:
-   sentence_list = re.split(r'(?<=[.!?])\s*', text)
+   sentence_list = re.split(r"(?<=[.!?])\s*", text)
    max_len = TextConfig.MAX_CHUNK_LENGTH
 
    chunk_list = []

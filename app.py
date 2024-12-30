@@ -40,7 +40,7 @@ def upload_file() -> tuple[Response, int] | Response | str:
 
 @app.route("/audio/<filename>", methods=["GET"])
 def serve_audio(filename: str) -> Response:
-    return send_file(f"{FileConfig.UPLOAD_FOLDER}/{filename}", mimetype="audio/mp3")
+    return send_file(os.path.join(FileConfig.UPLOAD_FOLDER, filename), mimetype="audio/mp3")
 
 
 @app.route("/count/", methods=["POST"])
@@ -57,6 +57,14 @@ def count() -> Response:
     text = get_text(file_path)
     return Response(str(len(text) // 100))
 
+
+@app.route("/downloads/<filename>")
+def download_file(filename: str):
+    file_path = os.path.join(FileConfig.UPLOAD_FOLDER, filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    else:
+        return jsonify({"error": "File not found"}), 404
 
 if __name__ == "__main__":
     app.run()
