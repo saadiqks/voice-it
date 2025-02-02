@@ -5,7 +5,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
 from werkzeug.wrappers.response import Response
 
-from config import FileConfig
+from config import FileConfig, DebugConfig
 from conversion_service import convert_file_to_wav, save_uploaded_file
 from text_service import get_text
 
@@ -66,5 +66,6 @@ def download_file(filename: str):
     else:
         return jsonify({"error": "File not found"}), 404
 
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=DebugConfig.DEBUG_FLAG)

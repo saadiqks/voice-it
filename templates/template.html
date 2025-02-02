@@ -3,7 +3,11 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Vocality</title>
+        <meta
+            name="description"
+            content="Convert text to speech for free using AI. Support for TXT, PDF, and DOCX files. No registration required. Fast and easy online text-to-speech conversion."
+        />
+        <title>Vocality - Free Text to Speech Converter Using AI</title>
         <link
             rel="icon"
             href="{{ url_for('static', filename='favicon.ico') }}"
@@ -17,12 +21,28 @@
             <button id="darkModeToggle" class="dark-mode-toggle">☀️</button>
 
             <h1>Vocality</h1>
-            <h3>Convert any text file into an audio file for free!</h3>
-            <p>Input must be a TXT, PDF, or DOCX file.</p>
-            <p>File must have fewer than 2000 characters.</p>
+            <h3>Convert text to audio using AI for free!</h3>
+            <p>Input must be a website URL or a TXT, PDF, or DOCX file.</p>
+            <p>Output will be an MP3 file.</p>
+            <p>Text must be in English and have fewer than 2000 characters.</p>
             <p>Uploaded files and recordings are not stored.</p>
 
-            <div class="file-input">
+            <div class="input-toggle">
+                <button id="urlToggle" class="toggle-btn active">
+                    Website URL
+                </button>
+                <button id="fileToggle" class="toggle-btn">File Upload</button>
+            </div>
+
+            <div class="url-input">
+                <input
+                    type="text"
+                    id="urlInput"
+                    placeholder="Enter website URL"
+                    aria-label="Website URL input"
+                />
+            </div>
+            <div class="file-input" style="display: none">
                 <input
                     type="file"
                     id="fileInput"
@@ -35,7 +55,6 @@
                 Cancel upload
             </button>
 
-            <!-- <span id="loader" class="loader" style="display: none"></span> -->
             <span id="timeRemaining" style="display: none">
                 Estimated time remaining: <span id="countdown"></span>
             </span>
@@ -44,7 +63,9 @@
                 <audio id="audioPlayer" controls>
                     Your browser does not support the audio element.
                 </audio>
-                <a id="downloadLink">Download audio file</a>
+                <a id="downloadLink" class="download-button-style"
+                    >Download audio file</a
+                >
             </div>
         </div>
         <div id="bottom" class="container">
@@ -52,7 +73,7 @@
             <br /><br />
             <button
                 class="btn"
-                onclick="window.location.href='https://buymeacoffee.com/sshaik';"
+                onclick="window.open('https://buymeacoffee.com/sshaik', '_blank')"
             >
                 Buy Me a Coffee
             </button>

@@ -17,3 +17,6 @@ class FileConfig:
 class TextConfig:
     MAX_TEXT_LENGTH = 2000 # Google TTS has a limit of 5000 chars
     MAX_CHUNK_LENGTH = 400
+
+class DebugConfig:
+    DEBUG_FLAG = True

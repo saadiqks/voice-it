@@ -1,4 +1,5 @@
 import re
+from io import StringIO
 from typing import List
 
 from config import TextConfig
@@ -21,26 +22,30 @@ def get_text(file_path: str) -> str:
 
 
 def chunk_text_by_sentences(text: str) -> List[str]:
-   sentence_list = re.split(r"(?<=[.!?])\s*", text)
-   max_len = TextConfig.MAX_CHUNK_LENGTH
+    sentence_list = re.split(r"(?<=[.!?])\s*", text)
+    max_len = TextConfig.MAX_CHUNK_LENGTH
+    chunk_list = []
+    current_chunk = StringIO()
 
-   chunk_list = []
-   current_chunk = ""
+    for sentence in sentence_list:
+        if len(sentence) > max_len:
+            while sentence:
+                chunk = sentence[:max_len]
+                chunk_list.append(chunk.strip())
+                sentence = sentence[max_len:]
+        else:
+            current_text = current_chunk.getvalue()
+            space_needed = " " if current_text else ""
 
-   for sentence in sentence_list:
-       if len(sentence) > max_len:
-           while sentence:
-               chunk = sentence[:max_len]
-               chunk_list.append(chunk.strip())
-               sentence = sentence[max_len:]
-       else:
-           if len(current_chunk) + len(sentence) > max_len:
-               chunk_list.append(current_chunk.strip())
-               current_chunk = sentence
-           else:
-               current_chunk += " " + sentence if current_chunk else sentence
+            if len(current_text) + len(space_needed) + len(sentence) > max_len:
+                chunk_list.append(current_text.strip())
+                current_chunk = StringIO()
+                current_chunk.write(sentence)
+            else:
+                current_chunk.write(space_needed + sentence)
 
-   if current_chunk:
-       chunk_list.append(current_chunk.strip())
+    final_text = current_chunk.getvalue()
+    if final_text:
+        chunk_list.append(final_text.strip())
 
-   return chunk_list
+    return chunk_list

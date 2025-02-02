@@ -13,13 +13,32 @@ document.addEventListener("DOMContentLoaded", () => {
         convertBtn: document.getElementById("convertBtn"),
         cancelBtn: document.getElementById("cancelBtn"),
         darkModeToggle: document.getElementById("darkModeToggle"),
-        // loader: document.getElementById("loader"),
         timeRemaining: document.getElementById("timeRemaining"),
         countdown: document.getElementById("countdown"),
         audioContainer: document.getElementById("audioContainer"),
         audioPlayer: document.getElementById("audioPlayer"),
         downloadLink: document.getElementById("downloadLink"),
+        urlToggle: document.getElementById("urlToggle"),
+        fileToggle: document.getElementById("fileToggle"),
+        urlInput: document.querySelector(".url-input"),
+        fileInput: document.querySelector(".file-input"),
     };
+
+    elements.urlToggle.addEventListener("click", () => {
+        elements.urlToggle.classList.add("active");
+        elements.fileToggle.classList.remove("active");
+        elements.urlInput.style.display = "block";
+        elements.fileInput.style.display = "none";
+        elements.fileInput.value = "";
+    });
+
+    elements.fileToggle.addEventListener("click", () => {
+        elements.fileToggle.classList.add("active");
+        elements.urlToggle.classList.remove("active");
+        elements.fileInput.style.display = "block";
+        elements.urlInput.style.display = "none";
+        elements.urlInput.value = "";
+    });
 
     function formatTime(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600);
@@ -47,9 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateUI(isConverting) {
         state.isConverting = isConverting;
-        // elements.loader.style.display = isConverting
-        //     ? "inline"
-        //     : "none";
         elements.timeRemaining.style.display = isConverting ? "inline" : "none";
         elements.cancelBtn.style.display = isConverting ? "inline" : "none";
         elements.convertBtn.disabled = isConverting;
