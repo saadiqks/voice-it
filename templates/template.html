@@ -51,24 +51,26 @@
                 />
             </div>
             <button class="btn" id="convertBtn">Convert to speech</button>
-            <button id="cancelBtn" class="redbtn" style="display: none">
+            <button id="cancel-btn" class="cancel-btn" style="display: none">
                 Cancel upload
             </button>
 
             <span id="timeRemaining" style="display: none">
                 Estimated time remaining: <span id="countdown"></span>
             </span>
-            <div id="audioContainer" style="display: none">
+            <div id="audio-container" style="display: none">
                 <p>Conversion complete!</p>
-                <audio id="audioPlayer" controls>
-                    Your browser does not support the audio element.
-                </audio>
-                <a id="downloadLink" class="download-button-style"
-                    >Download audio file</a
-                >
+                <span id="small-container">
+                    <audio id="audioPlayer" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                    <a id="downloadLink" class="download-btn"
+                        >Download audio file</a
+                    >
+                </span>
             </div>
         </div>
-        <div id="bottom" class="container">
+        <div id="bottom-container" class="container">
             Consider donating if you find this website useful.
             <br /><br />
             <button

@@ -11,11 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const elements = {
         fileInput: document.getElementById("fileInput"),
         convertBtn: document.getElementById("convertBtn"),
-        cancelBtn: document.getElementById("cancelBtn"),
+        cancelBtn: document.getElementById("cancel-btn"),
         darkModeToggle: document.getElementById("darkModeToggle"),
         timeRemaining: document.getElementById("timeRemaining"),
         countdown: document.getElementById("countdown"),
-        audioContainer: document.getElementById("audioContainer"),
+        audioContainer: document.getElementById("audio-container"),
         audioPlayer: document.getElementById("audioPlayer"),
         downloadLink: document.getElementById("downloadLink"),
         urlToggle: document.getElementById("urlToggle"),
