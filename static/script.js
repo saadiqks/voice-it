@@ -18,27 +18,27 @@ document.addEventListener("DOMContentLoaded", () => {
         audioContainer: document.getElementById("audio-container"),
         audioPlayer: document.getElementById("audioPlayer"),
         downloadLink: document.getElementById("downloadLink"),
-        urlToggle: document.getElementById("urlToggle"),
-        fileToggle: document.getElementById("fileToggle"),
-        urlInput: document.querySelector(".url-input"),
+        // urlToggle: document.getElementById("urlToggle"),
+        // fileToggle: document.getElementById("fileToggle"),
+        // urlInput: document.querySelector(".url-input"),
         fileInput: document.querySelector(".file-input"),
     };
 
-    elements.urlToggle.addEventListener("click", () => {
-        elements.urlToggle.classList.add("active");
-        elements.fileToggle.classList.remove("active");
-        elements.urlInput.style.display = "block";
-        elements.fileInput.style.display = "none";
-        elements.fileInput.value = "";
-    });
+    // elements.urlToggle.addEventListener("click", () => {
+    //     elements.urlToggle.classList.add("active");
+    //     elements.fileToggle.classList.remove("active");
+    //     elements.urlInput.style.display = "block";
+    //     elements.fileInput.style.display = "none";
+    //     elements.fileInput.value = "";
+    // });
 
-    elements.fileToggle.addEventListener("click", () => {
-        elements.fileToggle.classList.add("active");
-        elements.urlToggle.classList.remove("active");
-        elements.fileInput.style.display = "block";
-        elements.urlInput.style.display = "none";
-        elements.urlInput.value = "";
-    });
+    // elements.fileToggle.addEventListener("click", () => {
+    //     elements.fileToggle.classList.add("active");
+    //     elements.urlToggle.classList.remove("active");
+    //     elements.fileInput.style.display = "block";
+    //     elements.urlInput.style.display = "none";
+    //     elements.urlInput.value = "";
+    // });
 
     function formatTime(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600);
